@@ -33,7 +33,7 @@ ALLOWED_HOSTS = []
 import pymongo
 
 MONGO_CLIENT = pymongo.MongoClient("mongodb://localhost:27017")  # cambia si usas Atlas
-MONGO_DB = MONGO_CLIENT["cinecraft_db"]  # cambia según tu nombre real
+MONGO_DB = MONGO_CLIENT["cinecraft"]  # cambia según tu nombre real
 
 
 INSTALLED_APPS = [
