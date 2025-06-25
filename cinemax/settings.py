@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -26,12 +25,9 @@ SECRET_KEY = 'django-insecure-kc*c*9he-zpf^($yl**+=a+!n-hnzv#dmr%iie(6yxw@3y-%&0
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
-
 # Application definition
 
 import pymongo
-
 MONGO_CLIENT = pymongo.MongoClient("mongodb://localhost:27017")  # cambia si usas Atlas
 MONGO_DB = MONGO_CLIENT["cinecraft"]  # cambia según tu nombre real
 
