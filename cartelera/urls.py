@@ -7,7 +7,9 @@ from .views import (
     HorarioListView,
     HorarioDetailView,
     FuncionListView,
-    UsuarioInteresadoListView
+    FuncionDetailView,
+    UsuarioInteresadoListView,
+    UsuarioInteresadoDetailView
 )
 
 urlpatterns = [
@@ -21,5 +23,10 @@ urlpatterns = [
     
     
     path('funciones/', FuncionListView.as_view()),
-    path('usuarios_interesados/', UsuarioInteresadoListView.as_view()),
+    path('funciones/<int:funcion_id>/', FuncionDetailView.as_view()),
+    
+    path('usuarios/', UsuarioInteresadoListView.as_view()),
+    path('usuarios/<int:usuario_id>/', UsuarioInteresadoDetailView.as_view())
+
+    
 ]

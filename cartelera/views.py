@@ -182,15 +182,108 @@ class HorarioDetailView(View):
 
 # FUNCIONES
 
+@method_decorator(csrf_exempt, name="dispatch")
 class FuncionListView(View):
     def get(self, request):
         funciones = list(db.funciones.find({}, {"_id": 0}))
         return JsonResponse(funciones, safe=False)
 
-# USUARIOS INTERESADOS
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            if "id" not in data or "pelicula" not in data or "cine" not in data:
+                return JsonResponse({"error": "Faltan campos obligatorios"}, status=400)
+            if db.funciones.find_one({ "id": data["id"] }):
+                return JsonResponse({"error": "Función ya registrada"}, status=409)
+            db.funciones.insert_one(data)
+            return JsonResponse({"mensaje": "Función agregada exitosamente"}, status=201)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "JSON inválido"}, status=400)
+        
+@method_decorator(csrf_exempt, name="dispatch")
+class FuncionDetailView(View):
+    def get(self, request, funcion_id):
+        try:
+            funcion_id = int(funcion_id)
+        except ValueError:
+            return JsonResponse({"error": "ID inválido"}, status=400)
 
+        funcion = db.funciones.find_one({ "id": funcion_id }, { "_id": 0 })
+        if not funcion:
+            return JsonResponse({"error": "Función no encontrada"}, status=404)
+        return JsonResponse(funcion)
+
+    def put(self, request, funcion_id):
+        try:
+            funcion_id = int(funcion_id)
+            data = json.loads(request.body)
+            result = db.funciones.update_one({ "id": funcion_id }, { "$set": data })
+            if result.matched_count == 0:
+                return JsonResponse({"error": "Función no encontrada"}, status=404)
+            return JsonResponse({"mensaje": "Función actualizada correctamente"})
+        except (ValueError, json.JSONDecodeError):
+            return JsonResponse({"error": "Datos inválidos"}, status=400)
+
+    def delete(self, request, funcion_id):
+        try:
+            funcion_id = int(funcion_id)
+            result = db.funciones.delete_one({ "id": funcion_id })
+            if result.deleted_count == 0:
+                return JsonResponse({"error": "Función no encontrada"}, status=404)
+            return JsonResponse({"mensaje": "Función eliminada exitosamente"})
+        except ValueError:
+            return JsonResponse({"error": "ID inválido"}, status=400)
+
+# USUARIOS INTERESADOS
+@method_decorator(csrf_exempt, name="dispatch")
 class UsuarioInteresadoListView(View):
     def get(self, request):
         usuarios = list(db.usuariosInteresados.find({}, {"_id": 0}))
         return JsonResponse(usuarios, safe=False)
+
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            if "id" not in data or "nombre" not in data or "correo" not in data:
+                return JsonResponse({"error": "Faltan campos obligatorios"}, status=400)
+            if db.usuariosInteresados.find_one({ "id": data["id"] }):
+                return JsonResponse({"error": "Usuario ya registrado"}, status=409)
+            db.usuariosInteresados.insert_one(data)
+            return JsonResponse({"mensaje": "Usuario registrado exitosamente"}, status=201)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "JSON inválido"}, status=400)
+        
+@method_decorator(csrf_exempt, name="dispatch")
+class UsuarioInteresadoDetailView(View):
+    def get(self, request, usuario_id):
+        try:
+            usuario_id = int(usuario_id)
+        except ValueError:
+            return JsonResponse({"error": "ID inválido"}, status=400)
+
+        usuario = db.usuariosInteresados.find_one({ "id": usuario_id }, {"_id": 0})
+        if not usuario:
+            return JsonResponse({"error": "Usuario no encontrado"}, status=404)
+        return JsonResponse(usuario)
+
+    def put(self, request, usuario_id):
+        try:
+            usuario_id = int(usuario_id)
+            data = json.loads(request.body)
+            result = db.usuariosInteresados.update_one({ "id": usuario_id }, { "$set": data })
+            if result.matched_count == 0:
+                return JsonResponse({"error": "Usuario no encontrado"}, status=404)
+            return JsonResponse({"mensaje": "Usuario actualizado correctamente"})
+        except (ValueError, json.JSONDecodeError):
+            return JsonResponse({"error": "Datos inválidos"}, status=400)
+
+    def delete(self, request, usuario_id):
+        try:
+            usuario_id = int(usuario_id)
+            result = db.usuariosInteresados.delete_one({ "id": usuario_id })
+            if result.deleted_count == 0:
+                return JsonResponse({"error": "Usuario no encontrado"}, status=404)
+            return JsonResponse({"mensaje": "Usuario eliminado exitosamente"})
+        except ValueError:
+            return JsonResponse({"error": "ID inválido"}, status=400)
         
